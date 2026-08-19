@@ -134,6 +134,34 @@ const perfil = async (req, res) => {
 };
 
 // ─────────────────────────────────────────────
+// GET /api/usuarios
+// Lista todos os usuários ativos (rota protegida)
+// ─────────────────────────────────────────────
+const listar = async (req, res) => {
+  try{
+    const usuarios = await Usuario.find({ ativo: true }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      sucesso: true,
+      total: usuarios.length,
+      usuarios: usuarios.map((u) => ({
+        id: u._id,
+        nome:u.nome,
+        email: u.email,
+        criadoEm: u.createdAt,
+      })),
+    })
+  } catch (erro) {
+    return res.status(500).json({
+      sucesso: false,
+      mensagem: "Erro interno no servidor.",
+      erro: erro.message,
+    });
+  }
+};
+
+
+// ─────────────────────────────────────────────
 // PUT /api/usuarios/editar
 // Atualiza nome e/ou e-mail do usuário logado
 // ─────────────────────────────────────────────
@@ -321,6 +349,7 @@ module.exports = {
   cadastrar,
   login,
   perfil,
+  listar, // novo
   editar,
   desativar,
   esqueciSenha,
